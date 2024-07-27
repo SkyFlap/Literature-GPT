@@ -33,7 +33,8 @@ def mfd_model_init(weight):
 
 def mfr_model_init(weight_dir, device="cpu"):
     args = argparse.Namespace(
-        cfg_path="modules/UniMERNet/configs/demo.yaml", options=None
+        cfg_path="literaturegpt/document_loaders/pdf_extract_kit/modules/UniMERNet/configs/demo.yaml",
+        options=None,
     )
     cfg = Config(args)
     cfg.config.model.pretrained = os.path.join(weight_dir, "pytorch_model.bin")
@@ -73,7 +74,7 @@ class MathDataset(Dataset):
 
 
 def pdf_extract_kit(
-    pdf: str, output: str, vis: Any = False, render: Any = False
+    pdf: str, output_dir: str, vis: Any = False, render: Any = False
 ) -> None:
     tz = pytz.timezone("Asia/Shanghai")
     now = datetime.datetime.now(tz)
@@ -81,7 +82,9 @@ def pdf_extract_kit(
     print("Started!")
 
     ## ======== model init ========##
-    with open("configs/model_configs.yaml") as f:
+    with open(
+        "literaturegpt/document_loaders/pdf_extract_kit/configs/model_configs.yaml"
+    ) as f:
         model_configs = yaml.load(f, Loader=yaml.FullLoader)
     img_size = model_configs["model_args"]["img_size"]
     conf_thres = model_configs["model_args"]["conf_thres"]
@@ -211,11 +214,12 @@ def pdf_extract_kit(
                                 }
                             )
 
-        output_dir = output
         os.makedirs(output_dir, exist_ok=True)
         basename = os.path.basename(single_pdf)[0:-4]
-        with open(os.path.join(output_dir, f"{basename}.json"), "w") as f:
-            json.dump(doc_layout_result, f)
+        with open(
+            os.path.join(output_dir, f"{basename}.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(doc_layout_result, f, ensure_ascii=False)
 
         if vis:
             color_palette = [
@@ -316,7 +320,9 @@ def pdf_extract_kit(
                         width=1,
                     )
                     fontText = ImageFont.truetype(
-                        "assets/fonts/simhei.ttf", 15, encoding="utf-8"
+                        "literaturegpt/document_loaders/pdf_extract_kit/assets/fonts/simhei.ttf",
+                        15,
+                        encoding="utf-8",
                     )
                     draw.text(
                         (x_min, y_min), label_name, color_palette[label], font=fontText

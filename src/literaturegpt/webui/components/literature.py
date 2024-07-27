@@ -30,16 +30,4 @@ if TYPE_CHECKING:
 def create_literature_tab(engine: "Engine") -> Dict[str, "Component"]:
     input_elems = engine.manager.get_base_elems()
     elem_dict = dict()
-    model_apikey = gr.Textbox(scale=3)
-    with gr.Row():
-        file_3 = gr.FileExplorer(
-            scale=1,
-            glob="*.pdf",
-            file_count="multiple",
-            root_dir=relative_path,
-            ignore_glob="**/__init__.py",
-            elem_id="file",
-        )
-
-        code = gr.Code(lines=30, scale=2, language="python")
     return elem_dict

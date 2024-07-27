@@ -49,10 +49,10 @@ def create_ui(demo_mode: bool = False) -> gr.Blocks:
         with gr.Tab("Pre-Process"):
             engine.manager.add_elems("preprocess", create_preprocess_tab(engine))
 
-        with gr.Tab("Literature"):
-            engine.manager.add_elems("literature", create_literature_tab(engine))
-        with gr.Tab("Chat"):
-            engine.manager.add_elems("chat", create_chat_tab(engine))
+        # with gr.Tab("Literature"):
+        #     engine.manager.add_elems("literature", create_literature_tab(engine))
+        # with gr.Tab("Chat"):
+        #     engine.manager.add_elems("chat", create_chat_tab(engine))
         demo.load(
             engine.resume,
             outputs=engine.manager.get_elem_list(),

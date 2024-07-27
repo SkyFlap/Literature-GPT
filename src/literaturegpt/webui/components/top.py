@@ -23,8 +23,7 @@ if is_gradio_available():
     import gradio as gr
 
 
-if TYPE_CHECKING:
-    from gradio.components import Component
+from gradio.components import Component
 
 
 def create_top() -> Dict[str, "Component"]:

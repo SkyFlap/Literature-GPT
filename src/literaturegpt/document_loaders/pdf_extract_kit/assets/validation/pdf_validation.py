@@ -95,7 +95,7 @@ def validation(gt_path, pred_path, label_classes):
 
     for single_pdf_result in os.listdir(pred_path):
         
-        with open(os.path.join(pred_path, single_pdf_result), 'r') as f:
+        with open(os.path.join(pred_path, single_pdf_result), 'r',encoding='utf-8') as f:
             preds_sample = json.load(f)
 
         basename = single_pdf_result[:-5]
@@ -105,7 +105,7 @@ def validation(gt_path, pred_path, label_classes):
 
     for single_pdf_gt in os.listdir(gt_path):
         
-        with open(os.path.join(gt_path, single_pdf_gt), 'r') as f:
+        with open(os.path.join(gt_path, single_pdf_gt), 'r',encoding='utf-8') as f:
             gt_sample = json.load(f)
 
         basename = single_pdf_gt[:-5]

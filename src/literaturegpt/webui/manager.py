@@ -13,10 +13,7 @@
 # limitations under the License.
 
 from typing import TYPE_CHECKING, Dict, Generator, List, Set, Tuple
-
-
-if TYPE_CHECKING:
-    from gradio.components import Component
+from gradio.components import Component
 
 
 class Manager:

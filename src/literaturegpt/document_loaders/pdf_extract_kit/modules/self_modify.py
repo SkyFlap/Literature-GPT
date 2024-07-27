@@ -10,12 +10,19 @@ from PIL import Image
 from paddleocr import PaddleOCR
 from ppocr.utils.logging import get_logger
 from ppocr.utils.utility import check_and_read, alpha_to_color, binarize_img
-from tools.infer.utility import draw_ocr_box_txt, get_rotate_crop_image, get_minarea_rect_crop
+from tools.infer.utility import (
+    draw_ocr_box_txt,
+    get_rotate_crop_image,
+    get_minarea_rect_crop,
+)
+
 logger = get_logger()
+
 
 def img_decode(content: bytes):
     np_arr = np.frombuffer(content, dtype=np.uint8)
     return cv2.imdecode(np_arr, cv2.IMREAD_UNCHANGED)
+
 
 def check_img(img):
     if isinstance(img, bytes):
@@ -24,7 +31,7 @@ def check_img(img):
         image_file = img
         img, flag_gif, flag_pdf = check_and_read(image_file)
         if not flag_gif and not flag_pdf:
-            with open(image_file, 'rb') as f:
+            with open(image_file, "rb") as f:
                 img_str = f.read()
                 img = img_decode(img_str)
             if img is None:
@@ -32,12 +39,11 @@ def check_img(img):
                     buf = BytesIO()
                     image = BytesIO(img_str)
                     im = Image.open(image)
-                    rgb = im.convert('RGB')
-                    rgb.save(buf, 'jpeg')
+                    rgb = im.convert("RGB")
+                    rgb.save(buf, "jpeg")
                     buf.seek(0)
                     image_bytes = buf.read()
-                    data_base64 = str(base64.b64encode(image_bytes),
-                                      encoding="utf-8")
+                    data_base64 = str(base64.b64encode(image_bytes), encoding="utf-8")
                     image_decode = base64.b64decode(data_base64)
                     img_array = np.frombuffer(image_decode, np.uint8)
                     img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
@@ -51,6 +57,7 @@ def check_img(img):
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
     return img
+
 
 def sorted_boxes(dt_boxes):
     """
@@ -66,8 +73,9 @@ def sorted_boxes(dt_boxes):
 
     for i in range(num_boxes - 1):
         for j in range(i, -1, -1):
-            if abs(_boxes[j + 1][0][1] - _boxes[j][0][1]) < 10 and \
-                    (_boxes[j + 1][0][0] < _boxes[j][0][0]):
+            if abs(_boxes[j + 1][0][1] - _boxes[j][0][1]) < 10 and (
+                _boxes[j + 1][0][0] < _boxes[j][0][0]
+            ):
                 tmp = _boxes[j]
                 _boxes[j] = _boxes[j + 1]
                 _boxes[j + 1] = tmp
@@ -81,7 +89,7 @@ def formula_in_text(mf_bbox, text_bbox):
     x3, y3 = text_bbox[0]
     x4, y4 = text_bbox[2]
     left_box, right_box = None, None
-    same_line = abs((y1+y2)/2 - (y3+y4)/2) / abs(y4-y3) < 0.2
+    same_line = abs((y1 + y2) / 2 - (y3 + y4) / 2) / abs(y4 - y3) < 0.2
     if not same_line:
         return False, left_box, right_box
     else:
@@ -90,25 +98,53 @@ def formula_in_text(mf_bbox, text_bbox):
         right_x = x2 + 1
         if x3 < x1 and x2 < x4:
             drop_origin = True
-            left_box = np.array([text_bbox[0], [left_x, text_bbox[1][1]], [left_x, text_bbox[2][1]], text_bbox[3]]).astype('float32')
-            right_box = np.array([[right_x, text_bbox[0][1]], text_bbox[1], text_bbox[2], [right_x, text_bbox[3][1]]]).astype('float32')
+            left_box = np.array(
+                [
+                    text_bbox[0],
+                    [left_x, text_bbox[1][1]],
+                    [left_x, text_bbox[2][1]],
+                    text_bbox[3],
+                ]
+            ).astype("float32")
+            right_box = np.array(
+                [
+                    [right_x, text_bbox[0][1]],
+                    text_bbox[1],
+                    text_bbox[2],
+                    [right_x, text_bbox[3][1]],
+                ]
+            ).astype("float32")
         if x3 < x1 and x1 <= x4 <= x2:
             drop_origin = True
-            left_box = np.array([text_bbox[0], [left_x, text_bbox[1][1]], [left_x, text_bbox[2][1]], text_bbox[3]]).astype('float32')
+            left_box = np.array(
+                [
+                    text_bbox[0],
+                    [left_x, text_bbox[1][1]],
+                    [left_x, text_bbox[2][1]],
+                    text_bbox[3],
+                ]
+            ).astype("float32")
         if x1 <= x3 <= x2 and x2 < x4:
             drop_origin = True
-            right_box = np.array([[right_x, text_bbox[0][1]], text_bbox[1], text_bbox[2], [right_x, text_bbox[3][1]]]).astype('float32')
+            right_box = np.array(
+                [
+                    [right_x, text_bbox[0][1]],
+                    text_bbox[1],
+                    text_bbox[2],
+                    [right_x, text_bbox[3][1]],
+                ]
+            ).astype("float32")
         if x1 <= x3 < x4 <= x2:
             drop_origin = True
         return drop_origin, left_box, right_box
 
-    
+
 def update_det_boxes(dt_boxes, mfdetrec_res):
     new_dt_boxes = dt_boxes
     for mf_box in mfdetrec_res:
         flag, left_box, right_box = False, None, None
         for idx, text_box in enumerate(new_dt_boxes):
-            ret, left_box, right_box = formula_in_text(mf_box['bbox'], text_box)
+            ret, left_box, right_box = formula_in_text(mf_box["bbox"], text_box)
             if ret:
                 new_dt_boxes.pop(idx)
                 if left_box is not None:
@@ -116,11 +152,22 @@ def update_det_boxes(dt_boxes, mfdetrec_res):
                 if right_box is not None:
                     new_dt_boxes.append(right_box)
                 break
-            
+
     return new_dt_boxes
 
+
 class ModifiedPaddleOCR(PaddleOCR):
-    def ocr(self, img, det=True, rec=True, cls=True, bin=False, inv=False, mfd_res=None, alpha_color=(255, 255, 255)):
+    def ocr(
+        self,
+        img,
+        det=True,
+        rec=True,
+        cls=True,
+        bin=False,
+        inv=False,
+        mfd_res=None,
+        alpha_color=(255, 255, 255),
+    ):
         """
         OCR with PaddleOCR
         args：
@@ -134,11 +181,11 @@ class ModifiedPaddleOCR(PaddleOCR):
         """
         assert isinstance(img, (np.ndarray, list, str, bytes))
         if isinstance(img, list) and det == True:
-            logger.error('When input a list of images, det must be false')
+            logger.error("When input a list of images, det must be false")
             exit(0)
         if cls == True and self.use_angle_cls == False:
             logger.warning(
-                'Since the angle classifier is not initialized, it will not be used during the forward process'
+                "Since the angle classifier is not initialized, it will not be used during the forward process"
             )
 
         img = check_img(img)
@@ -146,7 +193,7 @@ class ModifiedPaddleOCR(PaddleOCR):
         if isinstance(img, list):
             if self.page_num > len(img) or self.page_num == 0:
                 self.page_num = len(img)
-            imgs = img[:self.page_num]
+            imgs = img[: self.page_num]
         else:
             imgs = [img]
 
@@ -166,8 +213,7 @@ class ModifiedPaddleOCR(PaddleOCR):
                 if not dt_boxes and not rec_res:
                     ocr_res.append(None)
                     continue
-                tmp_res = [[box.tolist(), res]
-                           for box, res in zip(dt_boxes, rec_res)]
+                tmp_res = [[box.tolist(), res] for box, res in zip(dt_boxes, rec_res)]
                 ocr_res.append(tmp_res)
             return ocr_res
         elif det and not rec:
@@ -197,9 +243,9 @@ class ModifiedPaddleOCR(PaddleOCR):
             if not rec:
                 return cls_res
             return ocr_res
-        
+
     def __call__(self, img, cls=True, mfd_res=None):
-        time_dict = {'det': 0, 'rec': 0, 'cls': 0, 'all': 0}
+        time_dict = {"det": 0, "rec": 0, "cls": 0, "all": 0}
 
         if img is None:
             logger.debug("no valid image provided")
@@ -208,16 +254,17 @@ class ModifiedPaddleOCR(PaddleOCR):
         start = time.time()
         ori_im = img.copy()
         dt_boxes, elapse = self.text_detector(img)
-        time_dict['det'] = elapse
+        time_dict["det"] = elapse
 
         if dt_boxes is None:
             logger.debug("no dt_boxes found, elapsed : {}".format(elapse))
             end = time.time()
-            time_dict['all'] = end - start
+            time_dict["all"] = end - start
             return None, None, time_dict
         else:
-            logger.debug("dt_boxes num : {}, elapsed : {}".format(
-                len(dt_boxes), elapse))
+            logger.debug(
+                "dt_boxes num : {}, elapsed : {}".format(len(dt_boxes), elapse)
+            )
         img_crop_list = []
 
         dt_boxes = sorted_boxes(dt_boxes)
@@ -225,8 +272,11 @@ class ModifiedPaddleOCR(PaddleOCR):
             bef = time.time()
             dt_boxes = update_det_boxes(dt_boxes, mfd_res)
             aft = time.time()
-            logger.debug("split text box by formula, new dt_boxes num : {}, elapsed : {}".format(
-                len(dt_boxes), aft-bef))
+            logger.debug(
+                "split text box by formula, new dt_boxes num : {}, elapsed : {}".format(
+                    len(dt_boxes), aft - bef
+                )
+            )
 
         for bno in range(len(dt_boxes)):
             tmp_box = copy.deepcopy(dt_boxes[bno])
@@ -236,19 +286,17 @@ class ModifiedPaddleOCR(PaddleOCR):
                 img_crop = get_minarea_rect_crop(ori_im, tmp_box)
             img_crop_list.append(img_crop)
         if self.use_angle_cls and cls:
-            img_crop_list, angle_list, elapse = self.text_classifier(
-                img_crop_list)
-            time_dict['cls'] = elapse
-            logger.debug("cls num  : {}, elapsed : {}".format(
-                len(img_crop_list), elapse))
+            img_crop_list, angle_list, elapse = self.text_classifier(img_crop_list)
+            time_dict["cls"] = elapse
+            logger.debug(
+                "cls num  : {}, elapsed : {}".format(len(img_crop_list), elapse)
+            )
 
         rec_res, elapse = self.text_recognizer(img_crop_list)
-        time_dict['rec'] = elapse
-        logger.debug("rec_res num  : {}, elapsed : {}".format(
-            len(rec_res), elapse))
+        time_dict["rec"] = elapse
+        logger.debug("rec_res num  : {}, elapsed : {}".format(len(rec_res), elapse))
         if self.args.save_crop_res:
-            self.draw_crop_rec_res(self.args.crop_res_save_dir, img_crop_list,
-                                   rec_res)
+            self.draw_crop_rec_res(self.args.crop_res_save_dir, img_crop_list, rec_res)
         filter_boxes, filter_rec_res = [], []
         for box, rec_result in zip(dt_boxes, rec_res):
             text, score = rec_result
@@ -256,5 +304,5 @@ class ModifiedPaddleOCR(PaddleOCR):
                 filter_boxes.append(box)
                 filter_rec_res.append(rec_result)
         end = time.time()
-        time_dict['all'] = end - start
+        time_dict["all"] = end - start
         return filter_boxes, filter_rec_res, time_dict

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from typing import TYPE_CHECKING, Any, Dict
+from gradio.components import Component
 from .common import load_config
 from .locales import LOCALES
 from .manager import Manager
@@ -20,16 +21,12 @@ from .runner import Runner
 from .utils import get_time
 
 
-if TYPE_CHECKING:
-    from gradio.components import Component
-
-
 class Engine:
     def __init__(self, demo_mode: bool = False, pure_chat: bool = False) -> None:
         self.demo_mode = demo_mode
         self.pure_chat = pure_chat
         self.manager = Manager()
-        self.runner = Runner()
+        self.runner = Runner(self.manager, demo_mode)
 
     def _update_component(
         self, input_dict: Dict[str, Dict[str, Any]]
@@ -46,7 +43,7 @@ class Engine:
 
     def resume(self):
         user_config = load_config() if not self.demo_mode else {}
-        lang = user_config.get("lang", None) or "en"
+        lang = user_config.get("lang", None) or "zh"
 
         init_dict = {
             "top.lang": {"value": lang},

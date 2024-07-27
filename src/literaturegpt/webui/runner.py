@@ -18,17 +18,14 @@ from subprocess import Popen, TimeoutExpired
 from typing import TYPE_CHECKING, Any, Dict, List, Generator, Optional
 from ..extras.packages import is_gradio_available
 from .locales import ALERTS
-from .utils import save_cmd
 from ..preprocess.converter import run_con
 
 if is_gradio_available():
     import gradio as gr
 
 
-if TYPE_CHECKING:
-    from gradio.components import Component
-
-    from .manager import Manager
+from gradio.components import Component
+from .manager import Manager
 
 
 class Runner:
@@ -43,18 +40,16 @@ class Runner:
         self.aborted = False
         self.running = False
 
-    def check_file(self, data: Dict["Component", Any]) -> str:
-        get = lambda elem_id: data[self.manager.get_elem_by_id(elem_id)]
-        lang, file_list = get("top.lang"), get("preprocess.file_upload")
+    def check_file(self, lang, file_list: list) -> str:
+        print(f"lang:{lang}")
+        print(file_list)
         return (
             ALERTS["file_uploaded"][lang]
             if file_list != None
             else ALERTS["err_file_uploaded"][lang]
         )
 
-    def run_preprocess(self, data: Dict["Component", Any]):
-        get = lambda elem_id: data[self.manager.get_elem_by_id(elem_id)]
-        lang, file_list = get("top.lang"), get("preprocess.file_upload")
+    def run_preprocess(self, lang, file_list: list):
         cache_path = "./cache"
         for file in file_list:
             run_con(file, cache_path)
