@@ -30,9 +30,9 @@ def create_top() -> Dict[str, "Component"]:
     available_models = list(SUPPORTED_MODELS) + ["Custom"]
 
     with gr.Row():
-        lang = gr.Dropdown(choices=["zh"], scale=1)
-        model_name = gr.Dropdown(choices=available_models, scale=3)
-        model_apikey = gr.Textbox(scale=3)
+        lang = gr.Dropdown(choices=["zh"])
+        model_name = gr.Dropdown(choices=available_models)
+        model_apikey = gr.Textbox()
         model_name.input(save_config, inputs=[lang, model_name], queue=False)
         model_apikey.input(
             save_config, inputs=[lang, model_name, model_apikey], queue=False

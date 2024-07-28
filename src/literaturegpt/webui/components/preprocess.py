@@ -27,12 +27,11 @@ from ..engine import Engine
 
 def create_preprocess_tab(engine: "Engine") -> Dict[str, "Component"]:
     input_elems = engine.manager.get_base_elems()
-    lang: "gr.Dropdown" = engine.manager.get_elem_by_id("top.lang")
     elem_dict = dict()
     file_upload = gr.Files(file_count="multiple", file_types=[".pdf"])
-    file_upload_check = gr.Textbox(scale=3)
+    file_upload_check = gr.Textbox()
     preprocess_button = gr.Button()
-    preprocess_check = gr.Textbox(scale=3)
+    preprocess_check = gr.Textbox()
     elem_dict.update(
         dict(
             file_upload=file_upload,
@@ -41,14 +40,15 @@ def create_preprocess_tab(engine: "Engine") -> Dict[str, "Component"]:
             preprocess_check=preprocess_check,
         )
     )
+    input_elems.update({file_upload, preprocess_button})
     file_upload.upload(
         fn=engine.runner.check_file,
-        inputs=[lang, file_upload],
+        inputs=input_elems,
         outputs=file_upload_check,
     )
     preprocess_button.click(
         fn=engine.runner.run_preprocess,
-        inputs=[lang, file_upload],
+        inputs=input_elems,
         outputs=preprocess_check,
     )
     return elem_dict

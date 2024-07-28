@@ -1,0 +1,16 @@
+*.ipynb*
+*.ipynb
+
+# local data
+
+
+# python
+.ipynb_checkpoints
+*.ipynb
+**/__pycache__/
+
+# logs
+*.log
+*.out
+
+

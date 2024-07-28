@@ -40,17 +40,24 @@ class Runner:
         self.aborted = False
         self.running = False
 
-    def check_file(self, lang, file_list: list) -> str:
-        print(f"lang:{lang}")
-        print(file_list)
+    def check_file(self, data: Dict["Component", Any]) -> str:
+        get = lambda elem_id: data[self.manager.get_elem_by_id(elem_id)]
+        lang, file_list = get("top.lang"), get("preprocess.file_upload")
         return (
             ALERTS["file_uploaded"][lang]
             if file_list != None
             else ALERTS["err_file_uploaded"][lang]
         )
 
-    def run_preprocess(self, lang, file_list: list):
+    def run_preprocess(self, data: Dict["Component", Any]):
+        get = lambda elem_id: data[self.manager.get_elem_by_id(elem_id)]
+        lang, api_key, file_list = (
+            get("top.lang"),
+            get("top.model_apikey"),
+            get("preprocess.file_upload"),
+        )
         cache_path = "./cache"
+        db_path = "./literature_db"
         for file in file_list:
-            run_con(file, cache_path)
+            run_con(file, api_key, cache_path, db_path)
         return ALERTS["preprocess_check"][lang]

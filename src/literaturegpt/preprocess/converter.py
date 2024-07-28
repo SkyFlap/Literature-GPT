@@ -12,10 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import json
 import shutil
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from ..document_loaders.pdf_extract_kit.pdf_extract import pdf_extract_kit
+from ..embeddings.zhipu_embedding import zhipu_embedding
 
 
-def run_con(input_folder: str, output_folder: str) -> None:
-    pdf_extract_kit(input_folder, output_folder)
+def run_con(
+    input_folder: str, api_key: str, cache_path: str, literature_db_path: str
+) -> None:
+    literature_db: list = []
+    pdf_extract_cache_path = pdf_extract_kit(input_folder, cache_path)
+    basename = os.path.basename(pdf_extract_cache_path)[0:-5]
+    with open(pdf_extract_cache_path, "r", encoding="utf-8") as f:
+        extract_info = json.load(f)
+    for layout_dets in extract_info:
+        literature_db.append(
+            {
+                "query": layout_dets["layout_dets"],
+                "vector": zhipu_embedding(layout_dets["layout_dets"], api_key),
+                "page_info": layout_dets["page_info"],
+            }
+        )
+    with open(
+        os.path.join(literature_db_path, f"{basename}_db.json"), "w", encoding="utf-8"
+    ) as f:
+        json.dump(literature_db, f, ensure_ascii=False)
