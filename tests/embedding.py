@@ -13,7 +13,7 @@ def zhipu_embedding(query: str, api_key: str) -> list[int]:
     return response.data[0].embedding
 
 
-api_key = "593c0b3ea166eb929c5702bd15974cbb.ZvhzG3jXM3emEBQq"
+api_key = ""
 literature_db: list = []
 literature_db_path = "./"
 pdf_extract_cache_path = "src/cache/examples_reshape.json"

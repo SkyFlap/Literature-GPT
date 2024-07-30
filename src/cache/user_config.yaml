@@ -1,5 +1,6 @@
 api_key:
-  glm-4-0520: '1'
+  glm-4-0520: 593c0b3ea166eb929c5702bd15974cbb.ZvhzG3jXM3emEBQq
+  glm-4-flash: 53e6184df84113bd2d53a0f74f73d879.RsqMe1e3iyNstqXr
 cache_dir: null
 lang: zh
-last_model: glm-4-0520
+last_model: glm-4-flash

@@ -20,27 +20,31 @@ from ..common import save_config
 if is_gradio_available():
     import gradio as gr
 
-
-from gradio.components import Component
-from ..engine import Engine
+if TYPE_CHECKING:
+    from gradio.components import Component
+    from ..engine import Engine
 
 
 def create_preprocess_tab(engine: "Engine") -> Dict[str, "Component"]:
     input_elems = engine.manager.get_base_elems()
     elem_dict = dict()
-    file_upload = gr.Files(file_count="multiple", file_types=[".pdf"])
-    file_upload_check = gr.Textbox()
+    with gr.Row():
+        with gr.Column():
+            file_upload = gr.Files(file_count="multiple", file_types=[".pdf"])
+            file_upload_check = gr.Textbox()
+        embedding_model = gr.Dropdown(choices=["智谱AI"])
     preprocess_button = gr.Button()
     preprocess_check = gr.Textbox()
     elem_dict.update(
         dict(
             file_upload=file_upload,
             file_upload_check=file_upload_check,
+            embedding_model=embedding_model,
             preprocess_button=preprocess_button,
             preprocess_check=preprocess_check,
         )
     )
-    input_elems.update({file_upload, preprocess_button})
+    input_elems.update({file_upload, embedding_model, preprocess_button})
     file_upload.upload(
         fn=engine.runner.check_file,
         inputs=input_elems,

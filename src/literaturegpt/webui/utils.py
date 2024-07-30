@@ -23,6 +23,14 @@ import psutil
 from transformers.trainer_utils import get_last_checkpoint
 from yaml import safe_dump, safe_load
 
+from ..extras.packages import is_gradio_available
+from .common import DEFAULT_CACHE_DIR, DEFAULT_CONFIG_DIR
+from .locales import ALERTS
+
+
+if is_gradio_available():
+    import gradio as gr
+
 
 def get_time() -> str:
     r"""
@@ -31,4 +39,18 @@ def get_time() -> str:
     return datetime.now().strftime(r"%Y-%m-%d-%H-%M-%S")
 
 
-
+def check_json_schema(text: str, lang: str) -> None:
+    r"""
+    Checks if the json schema is valid.
+    """
+    try:
+        tools = json.loads(text)
+        if tools:
+            assert isinstance(tools, list)
+            for tool in tools:
+                if "name" not in tool:
+                    raise NotImplementedError("Name not found.")
+    except NotImplementedError:
+        gr.Warning(ALERTS["err_tool_name"][lang])
+    except Exception:
+        gr.Warning(ALERTS["err_json_schema"][lang])

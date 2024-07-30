@@ -20,10 +20,15 @@ from ..embeddings.zhipu_embedding import zhipu_embedding
 
 
 def run_con(
-    input_folder: str, api_key: str, cache_path: str, literature_db_path: str
+    input_folder: str,
+    api_key: str,
+    embedding_model: str,
+    cache_path: str,
+    literature_db_path: str,
 ) -> None:
     literature_db: list = []
     pdf_extract_cache_path = pdf_extract_kit(input_folder, cache_path)
+    # pdf_extract_cache_path = ""
     basename = os.path.basename(pdf_extract_cache_path)[0:-5]
     with open(pdf_extract_cache_path, "r", encoding="utf-8") as f:
         extract_info = json.load(f)

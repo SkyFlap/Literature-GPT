@@ -1,0 +1,14 @@
+1. Title: QWEN2 TECHNICAL REPORT (QWEN2 技术报告)
+2. Authors: An Yang, Baosong Yang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Zhou, Chengpeng Li, Chengyuan Li, Dayiheng Liu, Fei Huang, Guanting Dong, Haoran Wei, Huan Lin, Jialong Tang, Jialin Wang, Jian Yang, Jianhong Tu, Jianwei Zhang, Jianxin Ma, Jianxin Yang, Jin Xu, Jingren Zhou, Jinze Bai, Jinzheng He, Junyang Lin, Kai Dang, Keming Lu, Keqin Chen, Kexin Yang, Mei Li, Mingfeng Xue, Na Ni, Pei Zhang, Peng Wang, Ru Peng, Rui Men, Ruize Gao, Runji Lin, Shijie Wang, Shuai Bai, Sinan Tan, Tianhang Zhu, Tianhao Li, Tianyu Liu, Wenbin Ge, Xiaodong Deng, Xiaohuan Zhou, Xingzhang Ren, Xinyu Zhang, Xipin Wei, Xuancheng Ren, Xuejing Liu, Yang Fan, Yang Yao, Yichang Zhang, Yu Wan, Yunfei Chu, Yuqiong Liu, Zeyu Cui, Zhenru Zhang, Zhifang Guo, and Zhihao Fan
+3. Affiliation: Alibaba Group (阿里巴巴集团)
+4. Keywords: Qwen2, large language models, large multimodal models, language understanding, generation, multilingual proficiency, coding, mathematics, reasoning
+5. Urls: https://huggingface.co/Qwen or https://modelscope.cn/organization/qwen , https://github.com/QwenLM/Qwen2
+6. Summary:
+
+    - (1): The research background of this article is the advancement of large language models (LLMs) and large multimodal models. The authors introduce the Qwen2 series, which includes foundational and instruction-tuned language models, aiming to improve performance in various tasks such as language understanding, generation, multilingual proficiency, coding, mathematics, and reasoning.
+    
+    - (2): Previous methods include open-weight models like Qwen1.5. The limitations of these methods are highlighted, such as performance gaps compared to proprietary models. The approach in this paper is well motivated by the need for improved LLMs that can compete with proprietary models and address the limitations of previous open-weight models.
+    
+    - (3): The research methodology proposed in this paper involves the development and release of the Qwen2 series, which includes dense models and a Mixture-of-Experts model. The models are trained and evaluated on diverse benchmarks to demonstrate their performance and capabilities.
+    
+    - (4): The methods in this paper achieve significant performance on various tasks. For instance, Qwen2-72B showcases remarkable performance on benchmarks like MMLU, GPQA, HumanEval, GSM8K, and BBH. The instruction-tuned variant, Qwen2-72B-Instruct, performs well on MT-Bench, Arena-Hard, and LiveCodeBench. The performance supports the goals of developing versatile and high-performance LLMs.

@@ -15,6 +15,7 @@
 from typing import TYPE_CHECKING, Any, Dict
 from gradio.components import Component
 from .common import load_config
+from .chatter import WebChatModel
 from .locales import LOCALES
 from .manager import Manager
 from .runner import Runner
@@ -27,6 +28,7 @@ class Engine:
         self.pure_chat = pure_chat
         self.manager = Manager()
         self.runner = Runner(self.manager, demo_mode)
+        self.chatter = WebChatModel(self.manager)
 
     def _update_component(
         self, input_dict: Dict[str, Dict[str, Any]]
