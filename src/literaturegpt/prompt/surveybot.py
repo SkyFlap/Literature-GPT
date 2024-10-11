@@ -46,7 +46,7 @@ PROMPT = {
 2. 确保记录的准确性和客观性。
 3. 对用户提供的文本进行总结概括"""
     },
-    "generate_abstract": {
+    "generate_abstract_pass": {
         "zh": """Please conclude this paper userinput。
 
 ## 
@@ -92,6 +92,20 @@ Follow the format of the output that follows:
 
 Be sure to use Chinese answers (proper nouns need to be marked in English), statements as concise and academic as possible,
 do not have too much repetitive information, numerical values using the original numbers."""
+    },
+    "generate_abstract": {
+        "zh": """# Role 摘要总结AI
+## Goals
+根据用户传入的学术文献内容，为用户总结生成中文摘要。
+## Constrains
+阅读文献内容，生成中文摘要，禁止生成其他内容。
+## Skills
+文本阅读、总结生成
+## Output Format
+直接以自然语言形式生成，不要回复其他无关内容
+## Workflow
+1. 阅读用户传入的学术文献内容。
+2. 根据文献内容，依照Output Format生成输出内容"""
     },
     "generate_survey": {
         "zh": """用户会向你提供多篇文献的总结介绍，需要你据此撰写文献综述"""

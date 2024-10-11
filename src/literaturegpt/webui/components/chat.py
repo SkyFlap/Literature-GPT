@@ -33,14 +33,17 @@ def create_chat_tab(engine: "Engine") -> Dict[str, "Component"]:
     input_elems = engine.manager.get_base_elems()
     elem_dict = dict()
     load_chat_button = gr.Button()
+    chatbot, messages, chat_elems = create_chat_box(engine, visible=False)
+    
+    
     elem_dict.update(
         dict(
             load_chat_button=load_chat_button,
         )
     )
     input_elems.update({load_chat_button})
-    chatbot, messages, chat_elems = create_chat_box(engine, visible=False)
     elem_dict.update(chat_elems)
+    elem_dict.update(dict(chatbot=chatbot))
     load_chat_button.click(
         lambda: gr.Column(visible=True),
         outputs=[chat_elems["chat_box"]],

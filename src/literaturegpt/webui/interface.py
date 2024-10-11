@@ -45,12 +45,13 @@ def create_ui(demo_mode: bool = False) -> gr.Blocks:
             )
         engine.manager.add_elems("top", create_top())
         lang: "gr.Dropdown" = engine.manager.get_elem_by_id("top.lang")
-
+        # 文献上传/数据预处理
         with gr.Tab("Pre-Process"):
             engine.manager.add_elems("preprocess", create_preprocess_tab(engine))
-
-        with gr.Tab("Literature & Chat"):
+        # 文献库查看/查找
+        with gr.Tab("Literature"):
             engine.manager.add_elems("literature", create_literature_tab(engine))
+        # AI交互
         with gr.Tab("Chat"):
             engine.manager.add_elems("chat", create_chat_tab(engine))
         demo.load(
