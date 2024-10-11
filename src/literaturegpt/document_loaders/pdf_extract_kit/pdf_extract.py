@@ -180,7 +180,7 @@ def pdf_extract_kit(
         # Formula recognition, collect all formula images in whole pdf file, then batch infer them.
         a = time.time()
         dataset = MathDataset(mf_image_list, transform=mfr_transform)
-        dataloader = DataLoader(dataset, batch_size=128, num_workers=32)
+        dataloader = DataLoader(dataset, batch_size=64, num_workers=0)
         mfr_res = []
         for imgs in dataloader:
             imgs = imgs.to(device)

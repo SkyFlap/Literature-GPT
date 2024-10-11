@@ -44,3 +44,4 @@ def run_con(
         os.path.join(literature_db_path, f"{basename}_db.json"), "w", encoding="utf-8"
     ) as f:
         json.dump(literature_db, f, ensure_ascii=False)
+    return os.path.join(literature_db_path, f"{basename}_db.json")

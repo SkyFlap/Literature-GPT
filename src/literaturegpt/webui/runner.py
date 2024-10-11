@@ -20,7 +20,9 @@ from typing import TYPE_CHECKING, Any, Dict, List, Generator, Optional
 from ..extras.packages import is_gradio_available
 from .locales import ALERTS
 from ..preprocess.converter import run_con
-from .components.chatbot import predict, parse_text
+from ..preprocess.analysis import run_analysis
+from .utils import parse_text, write_json_file, append_dict_to_excel
+from ..model.llm.zhipu import predict
 from ..prompt.surveybot import PROMPT
 from ..retrievers.hybrid_search import hybrid_search
 
@@ -64,16 +66,54 @@ class Runner:
 
     def run_preprocess(self, data: Dict["Component", Any]):
         get = lambda elem_id: data[self.manager.get_elem_by_id(elem_id)]
-        lang, api_key, embedding_model, file_list = (
+        lang, model_name, api_key, embedding_model, file_list, title, journal = (
             get("top.lang"),
+            get("top.model_name"),
             get("top.model_apikey"),
             get("preprocess.embedding_model"),
             get("preprocess.file_upload"),
+            get("preprocess.title_input"),
+            get("preprocess.journal_input"),
         )
         cache_path = "./cache"
-        db_path = "./literature_db"
+        vector_db_path = "./vector_db"
+        literature_db_path = "./literature_db"
         for file in file_list:
-            run_con(file, api_key, embedding_model, cache_path, db_path)
+            file_db_path = run_con(
+                file, api_key, embedding_model, cache_path, vector_db_path
+            )
+            # 使用os.path.basename获取文件名（包括扩展名）
+            file_name_with_extension = os.path.basename(file_db_path)
+
+            # 使用os.path.splitext分割文件名和扩展名
+            file_name, extension = os.path.splitext(file_name_with_extension)
+            (
+                abstract,
+                first,
+                second,
+                third,
+                research_methods,
+                research_topic,
+                content_overview,
+                methodological_algorithms,
+            ) = run_analysis(api_key, model_name, file_db_path, literature_db_path)
+            dict_data = {
+                "文献标题": title,
+                "期刊级别": journal,
+                "研究内容": abstract,
+                "一级研究方向": first,
+                "二级研究方向": second,
+                "三级研究方向": third,
+                "研究方法": research_methods,
+                "研究主题": research_topic,
+                "内容概述": content_overview,
+                "方法算法": methodological_algorithms,
+            }
+            write_json_file(
+                dict_data,
+                os.path.join(literature_db_path, file_name.replace("_db", "")),
+            )
+            append_dict_to_excel(dict_data, "./literature_db/literature_db.xlsx")
         return ALERTS["preprocess_check"][lang]
 
     def literature_check(self, data: Dict["Component", Any]):

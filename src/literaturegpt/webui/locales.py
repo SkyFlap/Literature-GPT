@@ -50,6 +50,19 @@ LOCALES = {
     "abstract_downloadbutton": {"zh": {"label": "摘要下载"}},
     "survey_downloadbutton": {"zh": {"label": "综述下载"}},
     "load_chat_button": {"zh": {"value": "加载对话界面"}},
+    "literature_load_btn": {"zh": {"value": "加载文献库表格"}},
+    "submitBtn": {
+        "zh": {
+            "value": "⬆️ 提交信息",
+        }
+    },
+    "emptyBtn": {"zh": {"value": "🗑️ 清除对话"}},
+    "literature_view_btn": {"zh": {"value": "浏览信息"}},
+    "literature_select_btn": {"zh": {"value": "选择文献"}},
+    "file_download_box": {"zh": {"label": "文件下载区"}},
+    "file_upload_box": {"zh": {"label": "文件上传区"}},
+    "journal_input": {"zh": {"label": "期刊名称"}},
+    "title_input": {"zh": {"label": "文献标题"}},
 }
 ALERTS = {
     "file_uploaded": {
