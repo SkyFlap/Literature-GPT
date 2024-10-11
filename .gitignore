@@ -2,8 +2,10 @@
 *.ipynb
 
 # local data
-
-
+output
+processed
+cache
+literature_db
 # python
 .ipynb_checkpoints
 *.ipynb
