@@ -1,0 +1,9 @@
+unimernet
+matplotlib
+PyMuPDF
+ultralytics
+paddlepaddle-gpu
+paddleocr==2.7.3
+zhipu
+zhipuai
+gradio
